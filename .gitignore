@@ -1,0 +1,5 @@
+.vscode
+*.db
+
+todo-app
+.DS_Store
