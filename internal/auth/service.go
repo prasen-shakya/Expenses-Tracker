@@ -3,8 +3,11 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/prasen-shakya/todo/internal/users"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,11 +19,12 @@ var (
 )
 
 type Service struct {
-	users *users.Repository
+	users     *users.Repository
+	secretKey []byte
 }
 
-func NewService(usersRepo *users.Repository) *Service {
-	return &Service{users: usersRepo}
+func NewService(usersRepo *users.Repository, jwtSecretKey []byte) *Service {
+	return &Service{users: usersRepo, secretKey: jwtSecretKey}
 }
 
 func (s *Service) Register(ctx context.Context, username, password string) (users.User, error) {
@@ -55,4 +59,47 @@ func (s *Service) Login(ctx context.Context, username, password string) (users.U
 	}
 
 	return user, nil
+}
+
+func (s *Service) CreateJwtToken(userId int) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"userId": userId,
+			"exp":    time.Now().Add(time.Hour * 24).Unix(),
+		})
+
+	tokenString, err := token.SignedString(s.secretKey)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
+}
+
+func (s *Service) VerifyJwtToken(tokenString string) (int, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if token.Method != jwt.SigningMethodHS256 {
+			return nil, fmt.Errorf("unexpected signing method")
+		}
+		return s.secretKey, nil
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	if !token.Valid {
+		return 0, fmt.Errorf("invalid token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return 0, fmt.Errorf("invalid claims")
+	}
+
+	userIDFloat, ok := claims["userId"].(float64)
+	if !ok {
+		return 0, fmt.Errorf("missing userId")
+	}
+
+	return int(userIDFloat), nil
 }

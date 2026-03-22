@@ -29,8 +29,14 @@ func main() {
 	}
 	defer dbConn.Close()
 
+	jwtSecret := os.Getenv("JWT_SECRET")
+
+	if jwtSecret == "" {
+		log.Fatal("JWT_SECRET not set")
+	}
+
 	usersRepo := users.NewRepository(dbConn)
-	authService := auth.NewService(usersRepo)
+	authService := auth.NewService(usersRepo, []byte(jwtSecret))
 	authController := controllers.NewAuthController(authService)
 
 	mux := http.NewServeMux()

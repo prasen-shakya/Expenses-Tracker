@@ -58,9 +58,16 @@ func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	jwtToken, err := c.authService.CreateJwtToken(int(user.ID))
+
+	if err != nil {
+		WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": "Internal server error."})
+		return
+	}
+
 	WriteJSON(w, http.StatusOK, map[string]string{
-		"message":  "Login successful",
-		"username": user.Username,
+		"message":  "User login successful",
+		"jwtToken": jwtToken,
 	})
 }
 
@@ -88,11 +95,15 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	jwtToken, err := c.authService.CreateJwtToken(int(user.ID))
+
+	if err != nil {
+		WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": "Internal server error."})
+		return
+	}
+
 	WriteJSON(w, http.StatusCreated, map[string]any{
-		"message": "User registered",
-		"user": map[string]any{
-			"id":       user.ID,
-			"username": user.Username,
-		},
+		"message":  "User registered successfully",
+		"jwtToken": jwtToken,
 	})
 }
