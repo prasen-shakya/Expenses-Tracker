@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -35,14 +36,20 @@ func main() {
 	mux := http.NewServeMux()
 	routes.RegisterAuthRoutes(mux, authController)
 
+	serverPort := os.Getenv("PORT")
+
+	if serverPort == "" {
+		log.Fatal("Server port not set")
+	}
+
 	server := &http.Server{
-		Addr:    "localhost:3000",
+		Addr:    fmt.Sprintf("localhost:%s", serverPort),
 		Handler: mux,
 	}
 
 	// Run server in a goroutine
 	go func() {
-		log.Println("Server running on http://localhost:3000")
+		log.Printf("Server running on http://localhost:%s", serverPort)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Server error: %v", err)
 		}
