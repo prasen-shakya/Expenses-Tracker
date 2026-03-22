@@ -17,7 +17,7 @@ var (
 )
 
 type User struct {
-	ID           int64     `json:"id"`
+	ID           int       `json:"id"`
 	Username     string    `json:"username"`
 	PasswordHash string    `json:"-"`
 	CreatedAt    time.Time `json:"created_at"`
@@ -76,6 +76,30 @@ func (r *Repository) GetByUsername(ctx context.Context, username string) (User, 
 			return User{}, ErrUserNotFound
 		}
 		return User{}, fmt.Errorf("get user by username: %w", err)
+	}
+
+	return user, nil
+}
+
+func (r *Repository) GetById(ctx context.Context, userId int) (User, error) {
+	const query = `
+		SELECT id, username, password_hash, created_at
+		FROM users
+		WHERE id = $1
+	`
+
+	var user User
+	err := r.db.QueryRowContext(ctx, query, userId).Scan(
+		&user.ID,
+		&user.Username,
+		&user.PasswordHash,
+		&user.CreatedAt,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return User{}, ErrUserNotFound
+		}
+		return User{}, fmt.Errorf("get user by id: %w", err)
 	}
 
 	return user, nil
