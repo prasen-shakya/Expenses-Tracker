@@ -17,7 +17,7 @@ var (
 )
 
 type User struct {
-	ID           int       `json:"id"`
+	Id           int       `json:"id"`
 	Username     string    `json:"username"`
 	PasswordHash string    `json:"-"`
 	CreatedAt    time.Time `json:"created_at"`
@@ -40,7 +40,7 @@ func (r *Repository) Create(ctx context.Context, username, passwordHash string) 
 
 	var user User
 	err := r.db.QueryRowContext(ctx, query, strings.TrimSpace(username), passwordHash).Scan(
-		&user.ID,
+		&user.Id,
 		&user.Username,
 		&user.PasswordHash,
 		&user.CreatedAt,
@@ -66,7 +66,7 @@ func (r *Repository) GetByUsername(ctx context.Context, username string) (User, 
 
 	var user User
 	err := r.db.QueryRowContext(ctx, query, strings.TrimSpace(username)).Scan(
-		&user.ID,
+		&user.Id,
 		&user.Username,
 		&user.PasswordHash,
 		&user.CreatedAt,
@@ -90,7 +90,7 @@ func (r *Repository) GetById(ctx context.Context, userId int) (User, error) {
 
 	var user User
 	err := r.db.QueryRowContext(ctx, query, userId).Scan(
-		&user.ID,
+		&user.Id,
 		&user.Username,
 		&user.PasswordHash,
 		&user.CreatedAt,

@@ -96,10 +96,10 @@ func (s *Service) VerifyJwtToken(tokenString string) (int, error) {
 		return 0, fmt.Errorf("invalid claims")
 	}
 
-	userIDFloat, ok := claims["userId"].(float64)
+	userIdFloat, ok := claims["userId"].(float64)
 	if !ok {
 		return 0, fmt.Errorf("missing userId")
 	}
 
-	return int(userIDFloat), nil
+	return int(userIdFloat), nil
 }
