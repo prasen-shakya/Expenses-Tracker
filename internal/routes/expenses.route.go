@@ -18,9 +18,9 @@ func RegisterExpenseRoutes(
 	requireAuth := auth.RequireAuth(authService, usersRepo)
 
 	mux.Handle("POST /expenses", requireAuth(http.HandlerFunc(expenseController.LogExpense)))
-	// mux.Handle("GET /expenses", requireAuth(http.HandlerFunc(expenseController.ListExpenses)))
-	// mux.Handle("GET /expenses/total", requireAuth(http.HandlerFunc(expenseController.GetTotalExpenses)))
-	// mux.Handle("GET /expenses/{id}", requireAuth(http.HandlerFunc(expenseController.GetExpenseByID)))
-	// mux.Handle("PUT /expenses/{id}", requireAuth(http.HandlerFunc(expenseController.UpdateExpense)))
-	// mux.Handle("DELETE /expenses/{id}", requireAuth(http.HandlerFunc(expenseController.DeleteExpense)))
+	mux.Handle("GET /expenses", requireAuth(http.HandlerFunc(expenseController.ListExpenses)))
+	mux.Handle("GET /expenses/total", requireAuth(http.HandlerFunc(expenseController.GetTotalExpenses)))
+	mux.Handle("GET /expenses/{id}", requireAuth(http.HandlerFunc(expenseController.GetExpenseByID)))
+	mux.Handle("PUT /expenses/{id}", requireAuth(http.HandlerFunc(expenseController.UpdateExpense)))
+	mux.Handle("DELETE /expenses/{id}", requireAuth(http.HandlerFunc(expenseController.DeleteExpense)))
 }
