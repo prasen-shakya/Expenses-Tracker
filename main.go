@@ -13,6 +13,7 @@ import (
 	"github.com/prasen-shakya/todo/internal/auth"
 	"github.com/prasen-shakya/todo/internal/controllers"
 	"github.com/prasen-shakya/todo/internal/db"
+	"github.com/prasen-shakya/todo/internal/expenses"
 	"github.com/prasen-shakya/todo/internal/routes"
 	"github.com/prasen-shakya/todo/internal/users"
 )
@@ -36,11 +37,17 @@ func main() {
 	}
 
 	usersRepo := users.NewRepository(dbConn)
+	expensesRepo := expenses.NewRepository(dbConn)
+
 	authService := auth.NewService(usersRepo, []byte(jwtSecret))
+	expensesService := expenses.NewService(expensesRepo)
+
 	authController := controllers.NewAuthController(authService)
+	expensesController := controllers.NewExpenseController(expensesService)
 
 	mux := http.NewServeMux()
 	routes.RegisterAuthRoutes(mux, authController)
+	routes.RegisterExpenseRoutes(mux, expensesController, authService, usersRepo)
 
 	serverPort := os.Getenv("PORT")
 
