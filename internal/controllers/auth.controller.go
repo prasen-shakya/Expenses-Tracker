@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -22,24 +21,8 @@ func NewAuthController(authService *auth.Service) *AuthController {
 	return &AuthController{authService: authService}
 }
 
-func getAuthParams(w http.ResponseWriter, r *http.Request) (AuthParams, error) {
-	var params AuthParams
-
-	decoder := json.NewDecoder(r.Body)
-	decoder.DisallowUnknownFields()
-
-	if err := decoder.Decode(&params); err != nil {
-		WriteJSON(w, http.StatusBadRequest, map[string]string{
-			"error": "Invalid request format",
-		})
-		return AuthParams{}, err
-	}
-
-	return params, nil
-}
-
 func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
-	params, err := getAuthParams(w, r)
+	params, err := GetRequestParams[AuthParams](w, r)
 	if err != nil {
 		return
 	}
@@ -72,7 +55,7 @@ func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
-	params, err := getAuthParams(w, r)
+	params, err := GetRequestParams[AuthParams](w, r)
 	if err != nil {
 		return
 	}
