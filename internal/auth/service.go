@@ -46,7 +46,12 @@ func (s *Service) Register(ctx context.Context, username, password string) (user
 }
 
 func (s *Service) Login(ctx context.Context, username, password string) (users.User, error) {
+	if strings.TrimSpace(username) == "" || password == "" {
+		return users.User{}, ErrInvalidCredentials
+	}
+
 	user, err := s.users.GetByUsername(ctx, strings.TrimSpace(username))
+
 	if err != nil {
 		if errors.Is(err, users.ErrUserNotFound) {
 			return users.User{}, ErrInvalidCredentials
