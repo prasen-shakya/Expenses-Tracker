@@ -2,10 +2,10 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
+	"github.com/prasen-shakya/todo/internal/respond"
 	"github.com/prasen-shakya/todo/internal/users"
 )
 
@@ -18,29 +18,25 @@ func RequireAuth(authService *Service, usersRepo *users.Repository) func(http.Ha
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
-				w.WriteHeader(http.StatusUnauthorized)
-				fmt.Fprint(w, "Missing authorization header")
+				respond.WriteJSON(w, http.StatusUnauthorized, map[string]string{"error": "Missing authorization header"})
 				return
 			}
 
 			tokenString, ok := strings.CutPrefix(authHeader, "Bearer ")
 			if !ok || tokenString == "" {
-				w.WriteHeader(http.StatusUnauthorized)
-				fmt.Fprint(w, "Invalid authorization header")
+				respond.WriteJSON(w, http.StatusUnauthorized, map[string]string{"error": "Invalid authorization header"})
 				return
 			}
 
 			userId, err := authService.VerifyJwtToken(tokenString)
 			if err != nil {
-				w.WriteHeader(http.StatusUnauthorized)
-				fmt.Fprint(w, "Invalid token")
+				respond.WriteJSON(w, http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
 				return
 			}
 
 			user, err := usersRepo.GetById(r.Context(), userId)
 			if err != nil {
-				w.WriteHeader(http.StatusUnauthorized)
-				fmt.Fprint(w, "Invalid token")
+				respond.WriteJSON(w, http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
 				return
 			}
 

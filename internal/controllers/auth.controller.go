@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/prasen-shakya/todo/internal/auth"
+	"github.com/prasen-shakya/todo/internal/respond"
 	"github.com/prasen-shakya/todo/internal/users"
 )
 
@@ -37,18 +38,18 @@ func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 			message = "Invalid credentials"
 		}
 
-		WriteJSON(w, status, map[string]string{"error": message})
+		respond.WriteJSON(w, status, map[string]string{"error": message})
 		return
 	}
 
 	jwtToken, err := c.authService.CreateJwtToken(int(user.Id))
 
 	if err != nil {
-		WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": "Internal server error."})
+		respond.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": "Internal server error."})
 		return
 	}
 
-	WriteJSON(w, http.StatusOK, map[string]string{
+	respond.WriteJSON(w, http.StatusOK, map[string]string{
 		"message":  "User login successful",
 		"jwtToken": jwtToken,
 	})
@@ -74,18 +75,18 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 			message = "Username already exists"
 		}
 
-		WriteJSON(w, status, map[string]string{"error": message})
+		respond.WriteJSON(w, status, map[string]string{"error": message})
 		return
 	}
 
 	jwtToken, err := c.authService.CreateJwtToken(int(user.Id))
 
 	if err != nil {
-		WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": "Internal server error."})
+		respond.WriteJSON(w, http.StatusInternalServerError, map[string]string{"error": "Internal server error."})
 		return
 	}
 
-	WriteJSON(w, http.StatusCreated, map[string]any{
+	respond.WriteJSON(w, http.StatusCreated, map[string]any{
 		"message":  "User registered successfully",
 		"jwtToken": jwtToken,
 	})
