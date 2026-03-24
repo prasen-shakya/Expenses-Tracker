@@ -117,4 +117,4 @@ You will need to provide the same environment variables in your deployed environ
 
 ## Why this project exists
 
-Mostly to keep expense tracking straightforward. A lot of personal tools either feel bloated or make you fight the UI for small tasks. This one is meant to feel lightweight: log the expense, check the month, move on.
+Mostly to keep expense tracking straightforward. A lot of personal tools are paid. This one is meant to feel lightweight: log the expense, check the month, move on.
