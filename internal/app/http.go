@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"io/fs"
 	"net/http"
 	"os"
 	"sync"
@@ -13,6 +14,7 @@ import (
 	"github.com/prasen-shakya/todo/internal/expenses"
 	"github.com/prasen-shakya/todo/internal/routes"
 	"github.com/prasen-shakya/todo/internal/users"
+	webassets "github.com/prasen-shakya/todo/web"
 )
 
 var (
@@ -48,6 +50,7 @@ func Handler() (http.Handler, error) {
 		expensesController := controllers.NewExpenseController(expensesService)
 
 		mux := http.NewServeMux()
+		registerFrontendRoutes(mux)
 		routes.RegisterAuthRoutes(mux, authController)
 		routes.RegisterExpenseRoutes(mux, expensesController, authService, usersRepo)
 
@@ -55,4 +58,30 @@ func Handler() (http.Handler, error) {
 	})
 
 	return handler, handlerErr
+}
+
+func registerFrontendRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("GET /", serveEmbeddedFile("index.html", "text/html; charset=utf-8"))
+	mux.HandleFunc("GET /styles.css", serveEmbeddedFile("styles.css", "text/css; charset=utf-8"))
+
+	jsFS, err := fs.Sub(webassets.Assets, "js")
+	if err != nil {
+		panic(err)
+	}
+
+	mux.Handle("GET /js/", http.StripPrefix("/js/", http.FileServer(http.FS(jsFS))))
+}
+
+func serveEmbeddedFile(path, contentType string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", contentType)
+
+		fileContents, err := webassets.Assets.ReadFile(path)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		_, _ = w.Write(fileContents)
+	}
 }

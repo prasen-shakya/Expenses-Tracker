@@ -2,7 +2,35 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/:path*",
+      "source": "/",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/styles.css",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/js/:path*",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/login",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/register",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/expenses",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/expenses/total",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/expenses/:id",
       "destination": "/api/index"
     }
   ]
