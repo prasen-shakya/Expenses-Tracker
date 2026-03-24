@@ -56,13 +56,13 @@ func main() {
 	}
 
 	server := &http.Server{
-		Addr:    fmt.Sprintf("localhost:%s", serverPort),
+		Addr:    fmt.Sprintf(":%s", serverPort),
 		Handler: mux,
 	}
 
 	// Run server in a goroutine
 	go func() {
-		log.Printf("Server running on http://localhost:%s", serverPort)
+		log.Printf("Server running on 0.0.0.0:%s", serverPort)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Server error: %v", err)
 		}
