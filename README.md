@@ -60,7 +60,7 @@ psql "$DATABASE_URL" -f sql/schema.sql
 go run .
 ```
 
-Then open [http://localhost:3001](http://localhost:3001).
+Then open [http://localhost:3000](http://localhost:3001).
 
 ## API routes
 
@@ -87,7 +87,7 @@ Authorization: Bearer <jwt-token>
 ## Example request
 
 ```bash
-curl -X POST http://localhost:3001/expenses \
+curl -X POST http://localhost:3000/expenses \
   -H "Authorization: Bearer <jwt-token>" \
   -H "Content-Type: application/json" \
   -d '{
